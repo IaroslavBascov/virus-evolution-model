@@ -130,7 +130,7 @@ function zom(x,y,child,gen,voz,energy){
  }
  function change(gen){
    for(var i=0;i<gen.length; i++){
-     gen[i]+=(Math.random()-0.5)*0.01;
+     gen[i]+=(Math.random()-0.5)*0.1;
    }
    return gen;
  }

@@ -1,5 +1,5 @@
 var startz=50;
-var startgen=[0.4,0.4,2];
+var startgen=[0.4,0.4,2,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]];
 var startpeople=100;
 var zombi=[];
 var people=[];
@@ -24,7 +24,7 @@ for(var i=0;i<startpeople;i++){
 }
 function zombiStep(){
   for(var i=0;i<zombi.length;i++){
-
+    var isee=[];
     if(zombi[i].x<0 || zombi[i].x>width){
       zombi[i].napravx=(zombi[i].x-width/2)/-10000;
     }
@@ -38,8 +38,7 @@ function zombiStep(){
     for(var u=0;u<people.length;u++){
       var d=distance(zombi[i].x-people[u].x,zombi[i].y-people[u].y);
       if(d<200){
-        zombi[i].napravx=(people[u].x-zombi[i].x)/d*0.1;
-        zombi[i].napravy=(people[u].y-zombi[i].y)/d*0.1;
+        isee.push([people[u],d]);
         people[u].x-=(people[u].x-zombi[i].x)*people[u].gen[0]*-0.001;
         people[u].y-=(people[u].y-zombi[i].y)*people[u].gen[0]*-0.001;
       }
@@ -63,23 +62,56 @@ function zombiStep(){
     for(var u=0;u<zombi.length;u++){
       if(u!=i){
         var d=distance(zombi[i].x-zombi[u].x,zombi[i].y-zombi[u].y);
-        if(d<15){
-          zombi[i].x+=(zombi[u].x-zombi[i].x)/-d*zombi[i].gen[0]*0.4;
-          zombi[i].y+=(zombi[u].y-zombi[i].y)/-d*zombi[i].gen[0]*0.4;
+        if(d<200){
+          isee.push([zombi[u],d]);
         }
         if(d<20){
-          if(zombi[i].energy*zombi[i].child/zombi[i].voz>zombi[i].energy*zombi[i].child/zombi[i].voz){
+          if(zombi[i].energy*zombi[i].child**2/zombi[i].voz>zombi[i].energy*zombi[i].child**2/zombi[i].voz){
             zombi[u].gen=change(zombi[i].gen);
           }
         }
       }
     }
-    zombi[i].energy-=zombi[i].gen[1]*0.1+zombi[i].gen[0]*0.1;
+    var maxobject=[[x=zombi[i].x,x=zombi[i].y],0.01,0];
+    for(var uu=0 ; uu<isee.length; uu++ ){
+      if(isee[uu][0].constructor.name==="zom"){
+        if(((isee[uu][1]**zombi[i].gen[3][0])*(energy**zombi[i].gen[3][1])*(voz**zombi[i].gen[3][2])*zombi[i].gen[3][3])+((isee[uu][1]**zombi[i].gen[3][4])*(energy**zombi[i].gen[3][5])*(voz**zombi[i].gen[3][6])*zombi[i].gen[3][7])>maxobject[2]){
+          maxobject=isee[uu];
+          maxobject.push(((isee[uu][1]**zombi[i].gen[3][0])*(energy**zombi[i].gen[3][1])*(voz**zombi[i].gen[3][2])*zombi[i].gen[3][3])+((isee[uu][1]**zombi[i].gen[3][4])*(energy**zombi[i].gen[3][5])*(voz**zombi[i].gen[3][6])*zombi[i].gen[3][7]));
+        }
+      }
+      if(isee[uu][0].constructor.name=="homo"){
+        if(((isee[uu][1]**zombi[i].gen[3][zombi[i].gen[3].length/2+0])*(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+1])*(voz**zombi[i].gen[3][zombi[i].gen[3].length/2+2])*zombi[i].gen[3][zombi[i].gen[3].length/2+3])+((isee[uu][1]**zombi[i].gen[3][zombi[i].gen[3].length/2+4])*(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+5])*(voz**zombi[i].gen[3][zombi[i].gen[3].length/2+6])*zombi[i].gen[3][zombi[i].gen[3].length/2+7])>maxobject[2]){
+          maxobject=isee[uu];
+          maxobject.push(((isee[uu][1]**zombi[i].gen[3][zombi[i].gen[3].length/2+0])*(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+1])*(voz**zombi[i].gen[3][zombi[i].gen[3].length/2+2])*zombi[i].gen[3][zombi[i].gen[3].length/2+3])+((isee[uu][1]**zombi[i].gen[3][zombi[i].gen[3].length/2+4])*(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+5])*(voz**zombi[i].gen[3][zombi[i].gen[3].length/2+6])*zombi[i].gen[3][zombi[i].gen[3].length/2+7]));
+        }
+      }
+    }
+    var speed=0;
+    if(maxobject[0].constructor.name=="zom"){
+      speed=(maxobject[1]**zombi[i].gen[3][7]*zombi[i].gen[3][8])+(energy**zombi[i].gen[3][9]*zombi[i].gen[3][10]+(voz*zombi[i].gen[3][11]))*0.01;
+    }
+    if(maxobject[0].constructor.name=="homo"){
+      speed=(maxobject[1]**zombi[i].gen[3][zombi[i].gen[3].length/2+7]*zombi[i].gen[3][zombi[i].gen[3].length/2+8])+(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+9]*zombi[i].gen[3][zombi[i].gen[3].length/2+10]+(voz*zombi[i].gen[3][zombi[i].gen[3].length/2+11]))*0.01;
+    }
+    zombi[i].energy-=zombi[i].gen[1]*0.07+zombi[i].gen[0]*Math.abs(speed)*0.001;
     zombi[i].voz++;
-    zombi[i].napravx+=(Math.random()-0.5)*0.01;
-    zombi[i].napravy+=(Math.random()-0.5)*0.01;
-    zombi[i].x+=zombi[i].napravx*zombi[i].gen[0]*10;
-    zombi[i].y+=zombi[i].napravy*zombi[i].gen[0]*10;
+    if(maxobject[0].constructor.name=="homo" || maxobject[0].constructor.name== "zom")
+    {
+      zombi[i].napravx=((maxobject[0].x-zombi[i].x)/maxobject[1])+(Math.random()-0.5)*0.1;
+      zombi[i].napravy=((maxobject[0].y-zombi[i].y)/maxobject[1]);
+    }
+    else{
+      zombi[i].napravx+=(Math.random()-0.5)*0.01;
+      zombi[i].napravy+=(Math.random()-0.5)*0.01;
+    }
+    if(isNaN(zombi[i].napravy) || isNaN(zombi[i].napravx)){
+      
+    }
+    else{
+      zombi[i].x+=zombi[i].napravx*zombi[i].gen[0]*speed*3;
+      zombi[i].y+=zombi[i].napravy*zombi[i].gen[0]*speed*3;
+    }
     if(zombi[i].energy<=0 || zombi[i].voz>=100000){
       zombi.splice(i,1)
     }
@@ -99,7 +131,7 @@ setInterval(function(){
   homoStep()
 },1);
 setInterval(function(){
-  people.push(new homo(Math.random()*width,Math.random()*width,[Math.random()+0.1,Math.random()+0.1,Math.random()+0.1],Math.random()*2000+2000));
+  people.push(new homo(Math.random()*width,Math.random()*width,[Math.random()+0.1,Math.random()*0.0+0.1,Math.random()+0.1],Math.random()*2000+2000));
 },500);
 setInterval(function(){
   people.splice(0,1);
@@ -130,7 +162,14 @@ function zom(x,y,child,gen,voz,energy){
  }
  function change(gen){
    for(var i=0;i<gen.length; i++){
-     gen[i]+=(Math.random()-0.5)*0.03;
+    if(gen[i].length==1){
+      gen[i]+=(Math.random()-0.5)*0.03;
+    }
+    else{
+      for(var u=0;u<gen[i].length; u++){
+        gen[i][u]+=(Math.random()-0.5)*0.03;
+      }
+    }
    }
    return gen;
  }

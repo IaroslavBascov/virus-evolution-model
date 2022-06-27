@@ -1,6 +1,6 @@
 var startz=50;
-var startgen=[0.4,0.4,2,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]];
-var startpeople=100;
+var startgen=[0.4,0.4,2,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],0,0.04,0];
+var startpeople=500;
 var zombi=[];
 var people=[];
 var width = window.innerWidth - 20;
@@ -13,9 +13,9 @@ for(var i=0;i<startz;i++){
   var x=Math.random()*width;
   var y=Math.random()*height;
   var child=0;
-  var gen=startgen;
+  var gen=change(startgen);
   var voz=Math.random()*1000;
-  var energy=3000+Math.random()*1000;
+  var energy=3000+Math.random()*4000;
   var imago=new zom(x,y,child,gen,voz,energy);
   zombi.push(imago);
 }
@@ -25,19 +25,16 @@ for(var i=0;i<startpeople;i++){
 function zombiStep(){
   for(var i=0;i<zombi.length;i++){
     var isee=[];
-    if(zombi[i].x<0 || zombi[i].x>width){
-      zombi[i].napravx=(zombi[i].x-width/2)/-10000;
-    }
-    if(zombi[i].y<0 || zombi[i].y>height){
-      zombi[i].napravy=(zombi[i].y-height/2)/-10000;
-    }
     ctx.beginPath(); 
-    ctx.arc(zombi[i].x,zombi[i].y,3,0,360);
-    ctx.fillStyle="green";
+    ctx.arc(zombi[i].x,zombi[i].y,1,0,360);
+    ctx.fillStyle="rgb("+zombi[i].gen[4]*5000+","+zombi[i].gen[5]*10000+","+zombi[i].gen[6]*5000+")";
+    ctx.lineWidth = 4;
+    ctx.strokeStyle="green";
+    ctx.stroke();
     ctx.fill();
     for(var u=0;u<people.length;u++){
       var d=distance(zombi[i].x-people[u].x,zombi[i].y-people[u].y);
-      if(d<200){
+      if(d<250){
         isee.push([people[u],d]);
         people[u].x-=(people[u].x-zombi[i].x)*people[u].gen[0]*-0.001;
         people[u].y-=(people[u].y-zombi[i].y)*people[u].gen[0]*-0.001;
@@ -65,8 +62,8 @@ function zombiStep(){
         if(d<200){
           isee.push([zombi[u],d]);
         }
-        if(d<20){
-          if(zombi[i].energy*zombi[i].child**2/zombi[i].voz>zombi[i].energy*zombi[i].child**2/zombi[i].voz){
+        if(d<10){
+          if(zombi[i].energy*zombi[i].child**2/zombi[i].voz>zombi[u].energy*zombi[u].child**2/zombi[u].voz){
             zombi[u].gen=change(zombi[i].gen);
           }
         }
@@ -94,23 +91,29 @@ function zombiStep(){
     if(maxobject[0].constructor.name=="homo"){
       speed=(maxobject[1]**zombi[i].gen[3][zombi[i].gen[3].length/2+7]*zombi[i].gen[3][zombi[i].gen[3].length/2+8])+(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+9]*zombi[i].gen[3][zombi[i].gen[3].length/2+10]+(voz*zombi[i].gen[3][zombi[i].gen[3].length/2+11]))*0.01;
     }
-    zombi[i].energy-=zombi[i].gen[1]*0.07+zombi[i].gen[0]*Math.abs(speed)*0.001;
+    zombi[i].energy-=zombi[i].gen[1]*0.07+zombi[i].gen[0]*Math.abs(speed)*0.1;
     zombi[i].voz++;
     if(maxobject[0].constructor.name=="homo" || maxobject[0].constructor.name== "zom")
     {
-      zombi[i].napravx=((maxobject[0].x-zombi[i].x)/maxobject[1])+(Math.random()-0.5)*0.1;
+      zombi[i].napravx=((maxobject[0].x-zombi[i].x)/maxobject[1]);
       zombi[i].napravy=((maxobject[0].y-zombi[i].y)/maxobject[1]);
     }
     else{
-      zombi[i].napravx+=(Math.random()-0.5)*0.01;
-      zombi[i].napravy+=(Math.random()-0.5)*0.01;
+      zombi[i].napravx=(Math.random()-0.5)*0.1;
+      zombi[i].napravy=(Math.random()-0.5)*0.1;
+    }
+    if(zombi[i].x<0 || zombi[i].x>width){
+      zombi[i].napravx=(zombi[i].x-width/2)/-10000;
+    }
+    if(zombi[i].y<0 || zombi[i].y>height){
+      zombi[i].napravy=(zombi[i].y-height/2)/-10000;
     }
     if(isNaN(zombi[i].napravy) || isNaN(zombi[i].napravx)){
       
     }
     else{
-      zombi[i].x+=zombi[i].napravx*zombi[i].gen[0]*speed*3;
-      zombi[i].y+=zombi[i].napravy*zombi[i].gen[0]*speed*3;
+      zombi[i].x+=zombi[i].napravx*zombi[i].gen[0]*speed*5;
+      zombi[i].y+=zombi[i].napravy*zombi[i].gen[0]*speed*5;
     }
     if(zombi[i].energy<=0 || zombi[i].voz>=100000){
       zombi.splice(i,1)
@@ -161,15 +164,27 @@ function zom(x,y,child,gen,voz,energy){
    return(Math.sqrt(xxx**2+yxx**2))
  }
  function change(gen){
-   for(var i=0;i<gen.length; i++){
-    if(gen[i].length==1){
-      gen[i]+=(Math.random()-0.5)*0.03;
+  var gen2=[];
+  for(var i=0;i<gen.length; i++){
+    if(gen[i].constructor.name=="Number"){
+      gen2.push(gen[i]);
     }
     else{
+      gen2.push([]);
       for(var u=0;u<gen[i].length; u++){
-        gen[i][u]+=(Math.random()-0.5)*0.03;
+        gen2[i].push(gen[i][u]);
       }
     }
    }
-   return gen;
+   for(var i=0;i<gen2.length; i++){
+    if(gen2[i].constructor.name=="Number"){
+      gen2[i]+=(Math.random()-0.5)*0.05;
+    }
+    else{
+      for(var u=0;u<gen2[i].length; u++){
+        gen2[i][u]+=(Math.random()-0.5)*0.05;
+      }
+    }
+   }
+   return gen2;
  }

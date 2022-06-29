@@ -1,5 +1,6 @@
 var startz=50;
 var startgen=[0.4,0.4,2,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],0,0.04,0];
+var environment=[3,3];
 var startpeople=500;
 var zombi=[];
 var people=[];
@@ -91,7 +92,7 @@ function zombiStep(){
     if(maxobject[0].constructor.name=="homo"){
       speed=(maxobject[1]**zombi[i].gen[3][zombi[i].gen[3].length/2+7]*zombi[i].gen[3][zombi[i].gen[3].length/2+8])+(energy**zombi[i].gen[3][zombi[i].gen[3].length/2+9]*zombi[i].gen[3][zombi[i].gen[3].length/2+10]+(voz*zombi[i].gen[3][zombi[i].gen[3].length/2+11]))*0.01;
     }
-    zombi[i].energy-=zombi[i].gen[1]*0.07+zombi[i].gen[0]*Math.abs(speed)*0.1;
+    zombi[i].energy-=(zombi[i].gen[1]*0.07+zombi[i].gen[0]*Math.abs(speed)*0.1)/environment[0]*5;
     zombi[i].voz++;
     if(maxobject[0].constructor.name=="homo" || maxobject[0].constructor.name== "zom")
     {
@@ -129,13 +130,22 @@ function homoStep(){
   }
 }
 setInterval(function(){
-  ctx.clearRect(0,0,width,height);
+  ctx.rect(0,0,width,height);
+  ctx.fillStyle=("rgb(" + (150*environment[0]**0.3) +",150," + (150/environment[0]**0.3) +")");
+  ctx.fill();
+  homoStep();
   zombiStep();
-  homoStep()
+  if(Math.random()<0.05*environment[1]){
+    people.push(new homo(Math.random()*width,Math.random()*width,[Math.random()+0.1,Math.random()*0.0+0.1,Math.random()+0.1],Math.random()*2000+2000));
+  }
+  if(zombi.length>150 & Math.random()<0.2){
+    environment[Math.round(Math.random()*(environment.length+0.9))]/=1.1;
+  }
+  if(zombi.length<40 & Math.random()<0.2){
+    environment[Math.round(Math.random()*(environment.length+0.9))]*=1.1;
+  }
 },1);
-setInterval(function(){
   people.push(new homo(Math.random()*width,Math.random()*width,[Math.random()+0.1,Math.random()*0.0+0.1,Math.random()+0.1],Math.random()*2000+2000));
-},500);
 setInterval(function(){
   people.splice(0,1);
 },2000);

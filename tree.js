@@ -216,10 +216,10 @@ function zombi2Step(vzrx,vzry){
       zombi2[i].napravy=(Math.random()-0.5)*0.1;
     }
     if(zombi2[i].x<0 || zombi2[i].x>width){
-      zombi2[i].napravx=(zombi2[i].x-width/2)/-100000;
+      zombi2[i].napravx=(zombi2[i].x-width/2)/-10000000;
     }
     if(zombi2[i].y<0 || zombi2[i].y>height){
-      zombi2[i].napravy=(zombi2[i].y-height/2)/-100000;
+      zombi2[i].napravy=(zombi2[i].y-height/2)/-10000000;
     }
     if(isNaN(zombi2[i].napravy) || isNaN(zombi2[i].napravx)){
       
@@ -264,7 +264,7 @@ setInterval(function(){
   if(zombi.length+zombi2.length>150 & Math.random()<0.02){
     environment[Math.round(Math.random()*(environment.length-0.6))]/=1.1;
   }
-  if(zombi.length+zombi2.length<40 & Math.random()<0.01){
+  if(zombi.length+zombi2.length<40 & Math.random()<0.002){
     environment[Math.round(Math.random()*(environment.length-0.6))]*=1.1;
   }
   if(zombi.length==0){

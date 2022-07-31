@@ -261,11 +261,11 @@ setInterval(function(){
   if(Math.random()<0.05*environment[1]){
     people.push(new homo(Math.random()*width,Math.random()*width,[Math.random()+0.1,Math.random()*0.0+0.1,Math.random()+0.1],Math.random()*2000+2000));
   }
-  if(zombi.length+zombi2.length>150 & Math.random()<0.2){
-    environment[Math.round(Math.random()*(environment.length+0.9))]/=1.1;
+  if(zombi.length+zombi2.length>150 & Math.random()<0.02){
+    environment[Math.round(Math.random()*(environment.length-0.6))]/=1.1;
   }
-  if(zombi.length+zombi2.length<40 & Math.random()<0.2){
-    environment[Math.round(Math.random()*(environment.length+0.9))]*=1.1;
+  if(zombi.length+zombi2.length<40 & Math.random()<0.01){
+    environment[Math.round(Math.random()*(environment.length-0.6))]*=1.1;
   }
   if(zombi.length==0){
     rest();
